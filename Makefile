@@ -10,8 +10,8 @@ env-down:
 env-cleanup:
 	@read -p "Очистити всі volume файли? [y/N]" ans; \
 	if [ "$$ans" = "y" ]; then \
-	  docker compose down todoapp-postgres && \
-	  sudo rm -rf out/pgdata && \
+	  docker compose down todoapp-postgres port-forwarder && \
+	  sudo rm -rf ${PROJECT_ROOT}/out/pgdata && \
 	  echo "Файли очищені"; \
 	else \
 	  echo "Очистка середовища скасована"; \
@@ -49,3 +49,8 @@ env-port-forward:
 
 env-port-close:
 	@docker compose dowm port-forwarder
+
+todoapp-run:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	export POSTGRES_HOST=localhost && \
+	go run ${PROJECT_ROOT}/cmd/todoapp/main.go
