@@ -7,7 +7,7 @@ import (
 	core_errors "github.com/Mirwinli/golang-todoapp/internal/core/errors"
 )
 
-func (r *TasksRepository) DeleteTask(ctx context.Context, id string) error {
+func (r *TasksRepository) DeleteTask(ctx context.Context, id int) error {
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
