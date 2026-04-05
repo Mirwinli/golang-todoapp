@@ -68,6 +68,6 @@ func (p *Pool) Exec(
 	return pgxCommandTag{tag}, nil
 }
 
-func (c *Pool) OpTimeout() time.Duration {
-	return c.opTimeout
+func (p *Pool) OpTimeout() time.Duration {
+	return p.opTimeout
 }

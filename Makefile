@@ -50,6 +50,15 @@ env-port-forward:
 env-port-close:
 	@docker compose dowm port-forwarder
 
+logs-cleanup:
+	@read -p "Очистити всі log файли? [y/N]: " ans; \
+	if [ "$$ans" = "y" ]; then \
+		sudo rm -rf ${PROJECT_ROOT}/out/logs && \
+		echo "Файли логів очищені"; \
+	else \
+  		echo "Очистка логів скасована"; \
+  	fi
+
 todoapp-run:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
 	export POSTGRES_HOST=localhost && \
