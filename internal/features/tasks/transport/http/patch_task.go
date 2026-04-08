@@ -1,9 +1,9 @@
 package tasks_transport_http
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Mirwinli/golang-todoapp/internal/core/domain"
 	core_logger "github.com/Mirwinli/golang-todoapp/internal/core/logger"
@@ -16,6 +16,19 @@ type PatchTaskRequest struct {
 	Title       core_http_types.Nullable[string] `json:"title"`
 	Description core_http_types.Nullable[string] `json:"description"`
 	Completed   core_http_types.Nullable[bool]   `json:"completed"`
+}
+
+type PatchTaskResponse struct {
+	ID      int
+	Version int
+
+	Title       string
+	Description *string
+	Completed   bool
+	CreatedAt   time.Time
+	CompletedAt *time.Time
+
+	AuthorUserID int
 }
 
 func (r *PatchTaskRequest) Validate() error {
@@ -71,7 +84,28 @@ func (h *TaskHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	taskPatch := taskPatchFromRequest(req)
-	
+
+	task, err := h.taskService.PatchTask(ctx, taskID, taskPatch)
+	if err != nil {
+		responseHandler.ErrorResponse(
+			err,
+			"failed to patch task",
+		)
+		return
+	}
+
+	response := PatchTaskResponse{
+		ID:           task.ID,
+		Version:      task.Version,
+		Title:        task.Title,
+		Description:  task.Description,
+		Completed:    task.Completed,
+		CreatedAt:    task.CreatedAt,
+		CompletedAt:  task.CompletedAt,
+		AuthorUserID: task.AuthorUserID,
+	}
+
+	responseHandler.JSONResponse(response, http.StatusOK)
 }
 
 func taskPatchFromRequest(req PatchTaskRequest) domain.TaskPatch {

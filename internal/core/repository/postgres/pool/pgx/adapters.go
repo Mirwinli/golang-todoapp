@@ -45,10 +45,11 @@ func mapErrors(err error) error {
 					core_postgres_pool.ErrViolatesForeignKey)
 			}
 		}
+		return fmt.Errorf(
+			"%v: %w",
+			err,
+			core_postgres_pool.ErrUnknown,
+		)
 	}
-	return fmt.Errorf(
-		"%v: %w",
-		err,
-		core_postgres_pool.ErrUnknown,
-	)
+	return nil
 }
