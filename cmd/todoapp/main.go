@@ -13,6 +13,9 @@ import (
 	"github.com/Mirwinli/golang-todoapp/internal/core/repository/postgres/pool/pgx"
 	core_http_middleware "github.com/Mirwinli/golang-todoapp/internal/core/transport/http/middleware"
 	core_http_server "github.com/Mirwinli/golang-todoapp/internal/core/transport/http/server"
+	statistics_postgres_repository "github.com/Mirwinli/golang-todoapp/internal/features/statistics/repository/postgres"
+	statistics_service "github.com/Mirwinli/golang-todoapp/internal/features/statistics/service"
+	statistics_transport_http "github.com/Mirwinli/golang-todoapp/internal/features/statistics/transport/http"
 	tasks_postgres_repository "github.com/Mirwinli/golang-todoapp/internal/features/tasks/repository/postgres"
 	tasks_service "github.com/Mirwinli/golang-todoapp/internal/features/tasks/service"
 	"github.com/Mirwinli/golang-todoapp/internal/features/tasks/transport/http"
@@ -61,6 +64,11 @@ func main() {
 	tasksService := tasks_service.NewTasksService(tasksRepository)
 	tasksTransportHTTP := tasks_transport_http.NewTaskHTTPHandler(tasksService)
 
+	logger.Debug("initializing feature", zap.String("feature", "statistics"))
+	statisticsRepository := statistics_postgres_repository.NewStatisticsRepository(pool)
+	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
+	statisticsTransportHTTP := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
+
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
@@ -74,6 +82,7 @@ func main() {
 	apiVersionRouter := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouter.RegisterRoutes(usersTransportHTTP.Routes()...)
 	apiVersionRouter.RegisterRoutes(tasksTransportHTTP.Routes()...)
+	apiVersionRouter.RegisterRoutes(statisticsTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRouters(apiVersionRouter)
 
