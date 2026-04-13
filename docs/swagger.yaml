@@ -1,0 +1,583 @@
+basePath: /api/v1
+definitions:
+  github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse:
+    properties:
+      error:
+        example: full error text
+        type: string
+      message:
+        example: short human-readable
+        type: string
+    type: object
+  github_com_Mirwinli_golang-todoapp_internal_core_transport_http_types.Nullable-bool:
+    properties:
+      set:
+        type: boolean
+      value:
+        type: boolean
+    type: object
+  github_com_Mirwinli_golang-todoapp_internal_core_transport_http_types.Nullable-string:
+    properties:
+      set:
+        type: boolean
+      value:
+        type: string
+    type: object
+  internal_features_statistics_transport_http.GetStatisticsResponse:
+    properties:
+      task_completed_rate:
+        example: 20
+        type: number
+      tasks_average_completion_time:
+        example: 1m30s
+        type: string
+      tasks_completed:
+        example: 10
+        type: integer
+      tasks_created:
+        example: 50
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.CreateTaskRequest:
+    properties:
+      author_user_id:
+        example: 1
+        type: integer
+      description:
+        example: Сробити домашку до 16 квітня
+        maxLength: 1000
+        minLength: 1
+        type: string
+      title:
+        example: Hello Wo
+        maxLength: 100
+        minLength: 1
+        type: string
+    required:
+    - author_user_id
+    - title
+    type: object
+  internal_features_tasks_transport_http.CreateTaskResponse:
+    properties:
+      author_user_id:
+        example: 1
+        type: integer
+      completed:
+        example: false
+        type: boolean
+      completed_at:
+        example: "null"
+        type: string
+      created_at:
+        example: "2026-02-26T10:10:00Z"
+        type: string
+      description:
+        example: This is a test description
+        type: string
+      id:
+        example: 1
+        type: integer
+      title:
+        example: Task title
+        type: string
+      version:
+        example: 1007
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.PatchTaskRequest:
+    properties:
+      completed:
+        $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_types.Nullable-bool'
+      description:
+        $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_types.Nullable-string'
+      title:
+        $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_types.Nullable-string'
+    type: object
+  internal_features_tasks_transport_http.PatchTaskResponse:
+    properties:
+      authorUserID:
+        type: integer
+      completed:
+        type: boolean
+      completedAt:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      version:
+        type: integer
+    type: object
+  internal_features_tasks_transport_http.TaskDTOResponse:
+    properties:
+      author_user_id:
+        example: 1
+        type: integer
+      completed:
+        example: false
+        type: boolean
+      completed_at:
+        example: "null"
+        type: string
+      created_at:
+        example: "2026-02-26T10:10:00Z"
+        type: string
+      description:
+        example: This is a test description
+        type: string
+      id:
+        example: 1
+        type: integer
+      title:
+        example: Task title
+        type: string
+      version:
+        example: 1007
+        type: integer
+    type: object
+  internal_features_users_transport_http.CreateUserRequest:
+    properties:
+      full_name:
+        example: Petro Jackson
+        maxLength: 100
+        minLength: 3
+        type: string
+      phone_number:
+        example: "+3809998887766"
+        maxLength: 15
+        minLength: 10
+        type: string
+    required:
+    - full_name
+    type: object
+  internal_features_users_transport_http.CreateUserResponse:
+    properties:
+      full_name:
+        example: John Doe Borusivoch
+        type: string
+      id:
+        example: 1
+        type: integer
+      phone_number:
+        example: "29998887766"
+        type: string
+      version:
+        example: 10
+        type: integer
+    type: object
+  internal_features_users_transport_http.GetUserResponse:
+    properties:
+      full_name:
+        example: John Doe Borusivoch
+        type: string
+      id:
+        example: 1
+        type: integer
+      phone_number:
+        example: "29998887766"
+        type: string
+      version:
+        example: 10
+        type: integer
+    type: object
+  internal_features_users_transport_http.PatchUserRequest:
+    properties:
+      full_name:
+        example: Maksim Maksimovich
+        type: string
+      phone_number:
+        example: "+3801112223344"
+        type: string
+    type: object
+  internal_features_users_transport_http.PatchUserResponse:
+    properties:
+      full_name:
+        example: John Doe Borusivoch
+        type: string
+      id:
+        example: 1
+        type: integer
+      phone_number:
+        example: "29998887766"
+        type: string
+      version:
+        example: 10
+        type: integer
+    type: object
+host: 127.0.0.1:5050
+info:
+  contact: {}
+  description: Todo Application REST-API scheme
+  title: Golang Todo API
+  version: "1.0"
+paths:
+  /statistics:
+    get:
+      description: Отримання статистики по задачам з опціональною фільтрацією user_id
+        та/або годинних проміжках
+      parameters:
+      - description: Фільтрація статистики по конкретному користувачу
+        in: query
+        name: user_id
+        type: integer
+      - description: Початок проміжка перегляду статистики (включно), формат YYYY-MM-DD
+        in: query
+        name: from
+        type: string
+      - description: Кінець проміжка пергляду статистики (не включно), формат YYYY-MM-DD
+        in: query
+        name: to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успішне отримання статистики
+          schema:
+            $ref: '#/definitions/internal_features_statistics_transport_http.GetStatisticsResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Отримання статистику
+      tags:
+      - statistics
+  /tasks:
+    get:
+      description: Перегляд списку задач з опціональною пагінацією та/або фільрацією
+        по ID автора задачі
+      parameters:
+      - description: Фільтрація задач по ID автора
+        in: query
+        name: user_id
+        type: integer
+      - description: Розмір сторінки з задачами
+        in: query
+        name: limit
+        type: integer
+      - description: Зміщення сторінки з задачами
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список задач
+          schema:
+            items:
+              $ref: '#/definitions/internal_features_tasks_transport_http.TaskDTOResponse'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Cписок задач
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Створити нову задачу в системі
+      parameters:
+      - description: CreateTask тіло запиту
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_tasks_transport_http.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успішно створена задача
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.CreateTaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Author not found
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Створити задачу
+      tags:
+      - tasks
+  /tasks/{id}:
+    delete:
+      description: Видалити існуючу в системі задачу по її ID
+      parameters:
+      - description: ID видаляємої задачі
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Успішне видалення задачі
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Видалення задачі
+      tags:
+      - tasks
+    get:
+      description: Отримання конкретної задачі по її ID
+      parameters:
+      - description: ID отримуваної задачі
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Отримання задачі
+      tags:
+      - tasks
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Оновлює інформацію вже в існуючій в системі задачі
+        ### Логіка оновлення полів (Three-state-logic)
+        1. **Поле не передано**: `description` ігноруєтся, значення в БД не змінюєтся
+        2. **Явно передано значення**: `description`: "Вийти погуляти в 6:30 з собакою" - змінюєьтся поле в БД
+        Обмеження: `title` і `completed` не можуть бути виставденні null
+      parameters:
+      - description: ID оновлюваної задачі
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: PatchTask тіло запиту
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_tasks_transport_http.PatchTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успішно змінена задача
+          schema:
+            $ref: '#/definitions/internal_features_tasks_transport_http.PatchTaskResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: Task not found
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Оновити задачу
+      tags:
+      - tasks
+  /users:
+    get:
+      description: Перегляд списка користувачів з опиціональною пагінацією
+      parameters:
+      - description: Розмір сторінки з користувачами
+        in: query
+        name: limit
+        type: integer
+      - description: Зміщення сторінки з користувачами
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Список користувачів
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Створити нового користувача в системі
+      parameters:
+      - description: CreateUser тіло запиту
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Успішно створений користувач
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.CreateUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Створити користувача
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: Видалення існуючого в системі користувача по його ID
+      parameters:
+      - description: ID видяляємого користувача
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: Успішне видалення користувача
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Видалення користувача
+      tags:
+      - users
+    get:
+      description: Отримання конкретного користувача по його ID
+      parameters:
+      - description: ID получаємого користувача
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Користувачуспішно знайдений
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.GetUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Отримання користувача
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Зміна інформації який вже існує в системі користувача
+        ### Логіка зміни полів {Three-state-logic}:
+        1. **Поле не передано**: `phone_number` игноруєтся,значення в БД не змінюєтся
+        2. **Явно передано значеня**: `phone_number`: "+380974526184" - встановлює новий номер телефону в БД
+        3. **Передано null**: `phone_number`:null - очищує поле в БД
+        Обмеження: `full_name` не може бути null
+      parameters:
+      - description: ID змінюючого користувача
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: PatchUser тіло запиту
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_features_users_transport_http.PatchUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успішно змінений користувач
+          schema:
+            $ref: '#/definitions/internal_features_users_transport_http.PatchUserResponse'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/github_com_Mirwinli_golang-todoapp_internal_core_transport_http_response.ErrorResponse'
+      summary: Зміна користувача
+      tags:
+      - users
+swagger: "2.0"

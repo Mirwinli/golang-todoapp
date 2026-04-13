@@ -60,6 +60,25 @@ func (r *PatchTaskRequest) Validate() error {
 	return nil
 }
 
+// PatchTask godoc
+// @Summary Оновити задачу
+// @Description Оновлює інформацію вже в існуючій в системі задачі
+// @Description ### Логіка оновлення полів (Three-state-logic)
+// @Description 1. **Поле не передано**: `description` ігноруєтся, значення в БД не змінюєтся
+// @Description 2. **Явно передано значення**: `description`: "Вийти погуляти в 6:30 з собакою" - змінюєьтся поле в БД
+// @Descroption 3. **Явно передано null**: `description`: null - очищає поле в БД (set to NULL)
+// @Description Обмеження: `title` і `completed` не можуть бути виставденні null
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param id path int true "ID оновлюваної задачі"
+// @Param request body PatchTaskRequest true "PatchTask тіло запиту"
+// @Success 200 {object} PatchTaskResponse "Успішно змінена задача"
+// @Failure 400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 404 {object} core_http_response.ErrorResponse "Task not found"
+// @Failure 409 {object} core_http_response.ErrorResponse "Conflict"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /tasks/{id} [patch]
 func (h *TaskHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
